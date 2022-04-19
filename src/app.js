@@ -65,59 +65,70 @@ App = {
 
   },
 
-  render: async()=>{
+  render: async () => {
     if (App.loading) {
       return;
-  }
+    }
 
-  // Update app loading state
-  App.setLoading(true)
+    // Update app loading state
+    App.setLoading(true)
 
-  // Render Account
-  $('#account').html(App.account)
+    // Render Account
+    $('#account').html(App.account)
 
 
-  // Render Tasks
-  await App.renderTasks()
+    // Render Tasks
+    await App.renderTasks()
 
-  
-  // Update loading state
-  App.setLoading(false)
+
+    // Update loading state
+    App.setLoading(false)
 
   },
 
 
-  renderTasks: async()=>{
+  renderTasks: async () => {
 
     // load all the tasks from the blockchain
     const taskCount = await App.todoList.taskCount();
     const $tackTemplate = $(".taskTemplate");
 
     // render each of the tasks
-    for (var i = 1; i <= taskCount; i++){
-        const task = await App.todoList.tasks(i);
-        const task_id = task[0].toNumber();
-        const task_content = task[1];
-        const task_completed = task[2];
+    for (var i = 1; i <= taskCount; i++) {
+      const task = await App.todoList.tasks(i);
+      const task_id = task[0].toNumber();
+      const task_content = task[1];
+      const task_completed = task[2];
 
-        // Create the html for the task
-        const $newTaskTemplate = $tackTemplate.clone()
-        $newTaskTemplate.find('.content').html(task_content)
-        $newTaskTemplate.find('input')
-                        .prop('name', task_id)
-                        .prop('checked', task_completed)
-                        // .on('click', App.toggleCompleted)
+      // Create the html for the task
+      const $newTaskTemplate = $tackTemplate.clone()
+      $newTaskTemplate.find('.content').html(task_content)
+      $newTaskTemplate.find('input')
+        .prop('name', task_id)
+        .prop('checked', task_completed)
+      // .on('click', App.toggleCompleted)
 
-        // Put the task in the correct list
-        if (task_completed) {
-            $('#completedTaskList').append($newTaskTemplate)
-        } else {
-            $('#taskList').append($newTaskTemplate)
-        }
+      // Put the task in the correct list
+      if (task_completed) {
+        $('#completedTaskList').append($newTaskTemplate)
+      } else {
+        $('#taskList').append($newTaskTemplate)
+      }
 
-        // Show the task
-        $newTaskTemplate.show()
+      // Show the task
+      $newTaskTemplate.show()
     }
+
+  },
+
+
+
+  createTask: async () => {
+
+    App.setLoading(true)
+    const content = $('#newTask').val()
+    await App.todoList.createTask(content, { from: App.account[0] });
+    window.location.reload();
 
   },
 
@@ -133,13 +144,13 @@ App = {
     const loader = $('#loader');
     const content = $('#content');
     if (boolean) {
-        loader.show();
-        content.hide();
+      loader.show();
+      content.hide();
     } else {
-        loader.hide();
-        content.show();
+      loader.hide();
+      content.show();
     }
-},
+  },
 
 
 
